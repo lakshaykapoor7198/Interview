@@ -443,8 +443,65 @@ void boundary_traversal(Node *root){
 }
 
 
+Node * tree_from_inorder_and_preorder(int in[],int  pre[],int n){
+	int root = search(in, pre[0], n);
+	Node *node = createNewNode(pre[0]);
+	if (root!=0){
+		node->left = tree_from_inorder_and_preorder(in, pre+1, root);
+	}
+	if (root!=n-1){
+		node->right = tree_from_inorder_and_preorder(in+root+1, pre
+			+root+1, n-root-1);
+	}
+	return node;
+}
+
+int search1(int in[],int x,int start,int end){
+	for (int i=start;i<=end;i++){
+		if (in[i]==x){
+			return i;
+		}
+	}
+	return -1;
+}
+
+int *extract(int in[], int lo[], int start, int end, int n){
+	int size = end - start +1;
+	int *arr = (int *) malloc(size*sizeof(int));
+	int k=0;
+	for (int i=0;i<n;i++){
+		if (search1(in, lo[i], start, end)!=-1)
+			arr[k++] = lo[i];
+	}
+	return arr;
+}
+
+Node *tree_from_inorder_and_levelorder(int in[], int lo[], int n){
+	int index  =search1(in, lo[0], 0, n-1);
+	Node *node = createNewNode(lo[0]);
+	if (index!=0){
+		int *lo_left = extract(in, lo,0, index-1 ,n);
+		node->left = tree_from_inorder_and_levelorder(in,lo_left,index);
+	}
+	if (index!=n-1){
+		int *lo_right = extract(in, lo,index+1, n-1 ,n);
+		node->right = tree_from_inorder_and_levelorder(in+index+1,lo_right,n-index-1);
+	}
+	return node;
+}
 
 
+Node * tree_special_zero_or_two_child(int pre[], int preN[], int index, int n){
+	if (index==n){
+		return NULL;
+	}
+	Node *node = createNewNode(pre[index]);
+	if (preN[index]=='n'){
+		node->left  =tree_special_zero_or_two_child(pre, preN, index+1, n);
+		node->right  =tree_special_zero_or_two_child(pre, preN, index+1, n);
+	}
+	return node;	
+}
 
 int main(int argc, char const *argv[])
 {
@@ -489,6 +546,16 @@ int main(int argc, char const *argv[])
 	// boundary_traversal(root);
 
 	//Tree construction:
-
+	// int in[] = {4,2,5,1,3};
+	// int pre[] = {1,2,4,5,3};
+	// int lo[] = {1,2,3,4,5};
+	// int preN[] = {'n','n','l','l','l'};
+	// int n =5;
+	// Node *root = tree_from_inorder_and_preorder(in, pre, n);
+	// inorder_stack(root);
+	// Node *root = tree_from_inorder_and_levelorder(in, lo, n);
+	// inorder_stack(root);
+	// Node *root  =tree_special_zero_or_two_child(pre, preN,0, n);
+	// inorder_stack(root);
 	return 0;
 }
