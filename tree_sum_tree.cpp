@@ -41,6 +41,10 @@ int sum_tree(Node *node){
 }
 
 
+bool check_for_sum_tree(Node *root){
+
+}
+
 void bfs_queue(Node *root){
 	int i;
 	queue <Node *> q;

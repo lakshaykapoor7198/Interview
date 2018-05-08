@@ -503,6 +503,25 @@ Node * tree_special_zero_or_two_child(int pre[], int preN[], int index, int n){
 	return node;	
 }
 
+
+
+void bottom_view(Node *root, map <int, pair <int, int> > &m,int width, int depth){
+	if (root==NULL){
+		return;
+	}
+	// cout<<root->data<<" "<<depth<<" "<<m[width].second<<endl;
+	if (m.find(width)!=m.end()){
+		if (depth>m[width].second){
+			m[width]=pair <int, int> (root->data, depth);
+		}
+	}
+	else{
+		m[width]=pair <int, int> (root->data, depth);
+	}
+	bottom_view(root->left,m,width-1, depth+1);
+	bottom_view(root->right,m,width+1, depth+1);
+}
+
 int main(int argc, char const *argv[])
 {
 	// Node *root = createNewNode(1);
@@ -558,6 +577,26 @@ int main(int argc, char const *argv[])
 	// Node *root  =tree_special_zero_or_two_child(pre, preN,0, n);
 	// inorder_stack(root);
 
-	
+
+
+	Node *root = createNewNode(20);
+    root->left = createNewNode(8);
+    root->right = createNewNode(22);
+    root->left->left = createNewNode(5);
+    root->left->right = createNewNode(3);
+    root->right->left = createNewNode(4);
+    root->right->right = createNewNode(25);
+    root->left->right->left = createNewNode(10);
+    root->left->right->right = createNewNode(14);
+    getWidth(root, 0);
+    map <int, pair <int, int> > m;
+    bottom_view(root, m, 0, 0);
+    pair <int, int> p;	
+	map <int, pair <int, int> > :: iterator it;
+	for (it=m.begin();it!=m.end();++it){
+		p  = it->second;
+		cout<<p.first<<" ";
+	}
+	cout<<endl;
 	return 0;
 }
