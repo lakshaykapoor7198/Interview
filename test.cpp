@@ -1,34 +1,35 @@
-#include <bits/stdc++.h>
+#include <iostream>
 using namespace std;
-
-int search1(int in[],int x,int start,int end){
-	for (int i=start;i<=end;i++){
-		if (in[i]==x){
-			return i;
-		}
-	}
-	return -1;
-}
-
-int *extract(int in[], int lo[], int start, int end, int n){
-	int size = end - start +1;
-	int *arr = (int *) malloc(size*sizeof(int));
-	int k=0;
-	for (int i=0;i<n;i++){
-		if (search1(in, lo[i], start, end)!=-1)
-			arr[k++] = lo[i];
-	}
-	return arr;
-}
 
 int main(int argc, char const *argv[])
 {
-	int in[] = {4,5,2,1,3};
-	int lo[] = {1,2,3,4,5};
-	int *arr  =extract(in, lo, 0, 2, 5);
-	for (int i=0;i<3;i++){
-		cout<<arr[i]<<" ";
+	long int n;
+	cin>>n;
+	long int arr[n];
+	long int i,j;	
+	for (i=0;i<n;i++){
+		cin>>arr[i];
 	}
-	cout<<endl;
+	long int c = 0;
+	long int l=0;
+	long int r=0;
+
+	for (i=1;i<n-1;i++){
+	    
+		l=0;
+		r=0;
+		for (j=0;j<n;j++){
+			if (i!=j && arr[i]>arr[j]){
+				if (j<i){
+					l+=1;
+				}		
+				if (j>i){
+					r+=1;
+				}		
+			}
+		}
+		c = c + l*r;
+	}
+	cout<<c<<endl;
 	return 0;
 }
