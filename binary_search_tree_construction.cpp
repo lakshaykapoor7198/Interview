@@ -122,19 +122,148 @@ Node *bst_from_pre_stack(int pre[], int n){
 	return root;
 }
 
-void getInorder(Node *root, int (&arr)[10], int *i){
+void getInorder(Node *root, vector <int> &v){
 	if (root==NULL){
 		return;
-	} 
-	getInorder(root->left, arr, i);
-	arr[*i] = root->data;
-	*i++;
-	getInorder(root->right, arr, i);
+	}
+	getInorder(root->left, v);
+	v.push_back(root->data);
+	getInorder(root->right, v);
+}
+
+void convert_to_bst(Node *root, vector <int> v, int &i){
+	if (root==NULL){
+		return;
+	}
+	convert_to_bst(root->left, v, i);
+	root->data = v[i];
+	i++;
+	convert_to_bst(root->right, v, i);
 }
 
 void bst_from_tree(Node *root){
-	int arr[10], i=0;
-	getInorder(root, arr, &i);
+	vector <int> v;
+	getInorder(root, v);
+	sort(v.begin(), v.end());
+	int i=0;
+	convert_to_bst(root,v, i);
+}
+
+void sum_of_greater_added(Node *root){
+	stack <Node *> s;
+	Node *curr  = root;
+	int prev=0;
+	while (1){
+		if (curr){
+			s.push(curr);
+			curr = curr->right;
+		}
+		else{
+			if (!s.empty()){
+				curr = s.top();
+				s.pop();
+				curr->data+=prev;
+				prev=curr->data;
+				curr= curr->left;
+			}
+			else{
+				break;
+			}
+		}
+	}
+}
+
+Node * array_to_bst(int arr[], int l, int h){
+	Node *node = NULL;
+	if (l<=h){
+		int mid  =(l+h)/2;
+		node  =createNewNode(arr[mid]);
+		node->left = array_to_bst(arr, l, mid-1);
+		node->right = array_to_bst(arr, mid+1, h);
+	}
+	return node;
+}
+
+void showQ(queue <Node *> q){
+	queue <Node *> q1 = q;
+	while (!q1.empty()){
+		cout<<q1.front()->data<<" ";
+		q1.pop();
+	}
+	cout<<"\n";
+}
+
+
+Node * bst_from_bfs(int arr[], int n){
+	queue <Node *> q;
+	queue <int> minQ, maxQ;
+	Node *root = createNewNode(arr[0]), *node, *temp;
+	q.push(root);
+	minQ.push(INT_MIN);
+	maxQ.push(INT_MAX);
+	int i=1;
+	while (1){
+		if (!q.empty() && i<n){
+			temp = q.front();
+			q.pop();
+			int topMin = minQ.front();
+			minQ.pop();
+			int topMax = maxQ.front();
+			maxQ.pop();
+			if (arr[i]<temp->data && arr[i]>=topMin){
+				node = createNewNode(arr[i]);
+				temp->left =node;
+				minQ.push(topMin);
+				maxQ.push(temp->data-1);
+				q.push(node);
+				i++;
+			}
+			if (arr[i]>temp->data && arr[i]<=topMax){
+				node = createNewNode(arr[i]);
+				temp->right = node;
+				minQ.push(temp->data+1);
+				maxQ.push(topMax);
+				q.push(node);
+				i++;
+			}
+		}
+		else{
+			break;
+		}
+	}
+	return root;
+}
+
+void preorder(Node *node){
+	if (node==NULL){
+		return;
+	}
+	cout<<node->data<<" ";
+	preorder(node->left);
+	preorder(node->right);
+}
+
+vector <Node *> all_bst(int start, int end){
+	vector <Node *> list;
+	if (start>end){
+		list.push_back(NULL);
+		return list;
+	}
+	for (int i=start; i<=end; i++){
+		vector <Node *> leftSubtree = all_bst(start, i-1);
+		vector <Node *> rightSubtree = all_bst(i+1, end);
+		for (int j=0; j<leftSubtree.size(); j++){
+			Node *left = leftSubtree[j];
+			for (int k=0; k<rightSubtree.size(); k++){
+				Node *right = rightSubtree[k];
+				Node * node = createNewNode(i);
+				node->left = left;
+				node->right = right;
+				list.push_back(node);
+			}
+		}
+	}
+	return list;
 }
 
 int main(int argc, char const *argv[])
@@ -154,7 +283,7 @@ int main(int argc, char const *argv[])
 	// cout<<endl;
 
 
-	Node *root = NULL;
+	
  
     /* Constructing tree given in the above figure
           10
@@ -162,12 +291,37 @@ int main(int argc, char const *argv[])
         30   15
        /      \
       20       5   */
-    root = createNewNode(10);
-    root->left = createNewNode(30);
-    root->right = createNewNode(15);
-    root->left->left = createNewNode(20);
-    root->right->right = createNewNode(5);
-    bst_from_tree(root);
-    // bfs_queue_at_le	vel(root);
+	// Node *root = NULL;
+ //    root = createNewNode(10);
+ //    root->left = createNewNode(30);
+ //    root->right = createNewNode(15);
+ //    root->left->left = createNewNode(20);
+ //    root->right->right = createNewNode(5);
+ //    bst_from_tree(root);
+ //    inorder(root);
+
+
+
+	// Node *root = createNewNode(5);
+ //    root->left = createNewNode(2);
+ //    root->right = createNewNode(13);
+ //    sum_of_greater_added(root);
+ //    inorder(root);
+
+
+	// int arr[] = {1,2,3,4,5,6};
+	// Node *root =array_to_bst(arr,0, 5);
+	// inorder(root);
+
+
+	// int arr[] = {7, 4, 12, 3, 6, 8, 1, 5, 10};
+	// Node *root  = bst_from_bfs(arr, 9);
+	// inorder(root);
+
+	vector <Node *> v  = all_bst(1,3);
+	for (int i=0;i<v.size();i++){
+		preorder(v[i]);
+		cout<<endl;
+	}
 	return 0;
 }
