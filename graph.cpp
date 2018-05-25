@@ -1,7 +1,7 @@
 #include <bits/stdc++.h>
 using namespace std;
 #define forLoop(i) for (int i=0;i<graph->V;i++)
-
+#define loopFor(i, n) for (int i=0;i<n;i++)
 
 struct Node{
 	int data;
@@ -253,20 +253,232 @@ void kahnTopologicalSort(Graph *graph){
 	cout<<endl;
 }
 
+void DFS_UTIL(Graph *graph,int i, bool visited[]){
+	visited[i] = true;
+	Node *node  =graph->arr[i].head;
+	while (node){
+		DFS_UTIL(graph, node->data, visited);
+		node = node->next;
+	}
+}
+
+void mother_vertex(Graph *graph){
+	bool visited[graph->V];
+	int i,v;
+	forLoop(i) visited[i] = false;
+	forLoop(i){
+		if (!visited[i]){
+			DFS_UTIL(graph, i, visited);
+			v =i;
+		}
+	}
+	forLoop(i) visited[i] = false;
+	DFS_UTIL(graph,v, visited);
+	forLoop(i){
+		if (!visited[i]){
+			cout<<-1<<endl;
+			return;
+		}
+	}
+	cout<<v<<endl;
+}
+
+void Closure_Util(Graph *graph,int s, int v, int res_closure[4][4]){
+	res_closure[s][v] = 1;
+	Node *node  =graph->arr[v].head;
+	while (node){
+		if (res_closure[s][node->data]==0){
+			Closure_Util(graph,s, node->data, res_closure);	
+		}
+		node = node->next;
+	}
+}
+
+void transitive_closure(Graph *graph){
+	int res_closure[4][4], i, j;
+	memset(res_closure, 0, graph->V*graph->V*sizeof(int));
+	forLoop(i){
+		Closure_Util(graph,i, i, res_closure);
+	}
+
+	forLoop(i){
+		forLoop(j){
+			cout<<res_closure[i][j]<<" ";
+		}
+		cout<<endl;
+	}
+}
+
+bool isCyclicUtil(Graph *graph, int i, bool visited[]){
+	visited[i] =true;
+	Node *node = graph->arr[i].head;
+	while (node){
+		if (visited[node->data]){
+			return true;
+		}
+		else{
+			return isCyclicUtil(graph, node->data, visited);
+		}
+		node= node->next;
+	}
+}
+
+bool isCyclic(Graph *graph){
+	int v= graph->V;
+	bool visited[v];
+	loopFor(i, v){
+		visited[i] = false;
+	}
+
+	loopFor(i,v){
+		if (!visited[i]){
+			if (isCyclicUtil(graph,i, visited)){
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+
+enum Color {WHITE, GRAY, BLACK};
+
+bool isCyclic_Colors_Util(Graph *graph, int i, int colors[]){
+	colors[i] = GRAY;
+	Node *node  =graph->arr[i].head;
+	while (node){
+		if (colors[node->data]==WHITE){
+			return isCyclic_Colors_Util(graph, node->data, colors);
+		}
+		if (colors[node->data]==GRAY){
+			return true;
+		}
+		node=node->next;
+	}
+	colors[i]=BLACK;
+	return false;
+}
+
+bool isCyclic_Colors(Graph *graph){
+	int colors[graph->V];
+	loopFor(i, graph->V){
+		colors[i]= WHITE;
+	}
+	
+	loopFor(i, graph->V){
+		if( colors[i]==WHITE){
+			if (isCyclic_Colors_Util(graph, i, colors)){
+				return true;
+			}
+		}
+	}
+	return false;
+}
+
+void countPathsUtil(Graph *graph, int s, int d,int &count, bool visited[]){
+	visited[s] = true;
+	if (s==d){
+		count++;
+	}
+	else{
+		Node *node = graph->arr[s].head;
+		while (node){
+			if (!visited[node->data]){
+				countPathsUtil(graph, node->data, d,count, visited);
+			}
+			node=node->next;	
+		}	
+	}
+	visited[s]=false;
+}
+
+void countPaths(Graph *graph , int s, int d){
+	int count=0;
+	bool visited[graph->V];
+	loopFor(i, graph->V){
+		visited[i] = false;
+	}
+	countPathsUtil(graph,s,d, count,visited);
+	cout<<count<<endl;
+}
+
+
 int main(int argc, char const *argv[])
 {
-	Graph *graph = createNewGraph(6);
-    addEdge(graph,5, 2);
-    addEdge(graph,5, 0);
-    addEdge(graph,4, 0);
-    addEdge(graph,4, 1);
-    addEdge(graph,2, 3);
-    addEdge(graph,3, 1);
+	// Graph *graph = createNewGraph(4);
+    // addEdge(graph,5, 2);
+    // addEdge(graph,5, 0);
+    // addEdge(graph,4, 0);
+    // addEdge(graph,4, 1);
+    // addEdge(graph,2, 3);
+    // addEdge(graph,3, 1);
     // printGraph(graph);
     // bfs_queue(graph, 2);
     // dfs_stack(graph, 0);
     // topologicalSort(graph);
     // allTopologicalSort(graph);
-    kahnTopologicalSort(graph);
+    // kahnTopologicalSort(graph);
+
+    // addEdge(graph,0, 1);
+    // addEdge(graph,0, 2);
+    // addEdge(graph,1, 3);
+    // addEdge(graph,4, 1);
+    // addEdge(graph,6, 4);
+    // addEdge(graph,5, 6);
+    // addEdge(graph,5, 2);
+    // addEdge(graph,6, 0);
+    // mother_vertex(graph);
+
+
+    // addEdge(graph,0, 1);
+    // addEdge(graph,0, 2);
+    // addEdge(graph,1, 2);
+    // addEdge(graph,2, 0);
+    // addEdge(graph,2, 3);
+    // addEdge(graph,3, 3);
+    // transitive_closure(graph);
+
+
+    // int k = 3;
+    // Graph *graph = createNewGraph(9);
+    // addEdge(graph,0, 1);
+    // addEdge(graph,0, 2);
+    // addEdge(graph,1, 2);
+    // addEdge(graph,1, 5);
+    // addEdge(graph,2, 3);
+    // addEdge(graph,2, 4);
+    // addEdge(graph,2, 5);
+    // addEdge(graph,2, 6);
+    // addEdge(graph,3, 4);
+    // addEdge(graph,3, 6);
+    // addEdge(graph,3, 7);
+    // addEdge(graph,4, 6);
+    // addEdge(graph,4, 7);
+    // addEdge(graph,5, 6);
+    // addEdge(graph,5, 8);
+    // addEdge(graph,6, 7);
+    // addEdge(graph,6, 8);
+    // printKCores(graph, k);
+
+
+    // Graph *graph  =createNewGraph(4);
+    // addEdge(graph,0, 1);
+    // addEdge(graph,0, 2);
+    // addEdge(graph,1, 2);
+    // addEdge(graph,2, 0);
+    // addEdge(graph,2, 3);
+    // addEdge(graph,3, 3);
+ 	// cout<<isCyclic(graph)<<endl;
+ 	// cout<<isCyclic_Colors(graph)<<endl;
+
+
+ 	Graph *graph  =createNewGraph(4);
+    addEdge(graph, 0, 1);
+    addEdge(graph, 0, 2);
+    addEdge(graph, 0, 3);
+    addEdge(graph, 2, 0);
+    addEdge(graph, 2, 1);
+    addEdge(graph, 1, 3);
+    countPaths(graph,2,3);
 	return 0;
 }
