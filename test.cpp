@@ -1,35 +1,56 @@
-#include <iostream>
+#include <bits/stdc++.h>
 using namespace std;
 
-int main(int argc, char const *argv[])
-{
-	long int n;
-	cin>>n;
-	long int arr[n];
-	long int i,j;	
-	for (i=0;i<n;i++){
-		cin>>arr[i];
-	}
-	long int c = 0;
-	long int l=0;
-	long int r=0;
+int returnOrder(char c){
+    if (c=='!') return 0;
+    if (c=='#') return 1;
+    if (c=='$') return 2;
+    if (c=='%') return 3;
+    if (c=='&') return 4;
+    if (c=='*') return 5;
+    if (c=='@') return 6;
+    if (c=='^') return 7;
+    if (c=='~') return 8;
+}
 
-	for (i=1;i<n-1;i++){
-	    
-		l=0;
-		r=0;
-		for (j=0;j<n;j++){
-			if (i!=j && arr[i]>arr[j]){
-				if (j<i){
-					l+=1;
-				}		
-				if (j>i){
-					r+=1;
-				}		
-			}
-		}
-		c = c + l*r;
-	}
-	cout<<c<<endl;
-	return 0;
+
+int main() {
+    int t;
+    cin>>t;
+    while (t--){
+        int n,i,j,nut, max_diff, index, bolt;
+        cin>>n;
+        char c;
+        vector <int> nuts(n), bolts(n), res(n);
+        vector <int>::iterator it;
+        for (i=0;i<n;i++){
+            cin>>c;
+            nuts[i]=returnOrder(c);
+        }
+        for (i=0;i<n;i++){
+            cin>>c;
+            bolts[i]=returnOrder(c);
+        }
+        
+        for (i=0;i<n;i++){
+            nut= nuts[i];
+            max_diff=INT_MIN;
+            for (j=0;j<n-i;j++){
+                bolt = bolts[j];
+                if (nut-bolt>max_diff){
+                    max_diff = nut-bolt;
+                    index= j;
+                }
+            }
+            res[i] = bolts[index];
+            cout<<res[i]<<endl;
+            // it = bolts.begin();
+            // bolts.erase(it+j);
+        }
+        for (int i=0;i<n;i++){
+            cout<<res[i]<<" ";
+        }
+        
+    }
+    return 0;
 }

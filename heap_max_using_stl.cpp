@@ -18,17 +18,17 @@ int main(int argc, char const *argv[])
 	for (it=v.begin(); it!=v.end(); ++it){
 		cout<<*it<<" ";
 	}	
-	cout<<endl;
-	pop_heap(v.begin(), v.end());
-	for (it=v.begin(); it!=v.end(); ++it){
-		cout<<*it<<" ";
-	}	
-	cout<<endl;
-	v.pop_back();
-	pop_heap(v.begin(), v.end());
-	for (it=v.begin(); it!=v.end(); ++it){
-		cout<<*it<<" ";
-	}	
+	// cout<<endl;
+	// pop_heap(v.begin(), v.end());
+	// for (it=v.begin(); it!=v.end(); ++it){
+	// 	cout<<*it<<" ";
+	// }	
+	// cout<<endl;
+	// v.pop_back();
+	// pop_heap(v.begin(), v.end());
+	// for (it=v.begin(); it!=v.end(); ++it){
+	// 	cout<<*it<<" ";
+	// }	
 	cout<<endl;
 	return 0;
 }
